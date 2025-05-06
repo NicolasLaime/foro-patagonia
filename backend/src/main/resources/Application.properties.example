@@ -1,0 +1,9 @@
+spring.application.name=backend
+spring.datasource.url=jdbc:mysql://localhost:3306/foro-patagonia
+spring.datasource.username={AQUI EL NOMBRE DE TU BASE DE DATOS}
+spring.datasource.password={AQUI LA CONTRASEÑA}
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+jwt.secret={TU CLAVE SECRETA}
