@@ -21,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name = "Category")
 public class Category {
 
     @Id
@@ -28,9 +29,16 @@ public class Category {
     private Long id;
     
     private String name;
-    
+
+    private  String description;
+
+
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY )
     private List<Post> posts;
-    
+
+
+
+
+
 
 }

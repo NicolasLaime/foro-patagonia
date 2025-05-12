@@ -1,5 +1,7 @@
 package com.backend.foro.services;
 
+import com.backend.foro.dtos.CategoryCreateDTO;
+import com.backend.foro.dtos.CategoryResponseDTO;
 import com.backend.foro.model.Category;
 import com.backend.foro.model.Post;
 
@@ -8,10 +10,11 @@ import java.util.Optional;
 
 public interface ICategoryService {
 
-    public List<Category> getCategories();
-    public void saveCategory(Category category);
-    public Category findCategory(Long idCategory);
+    public List<CategoryResponseDTO> getCategories();
+    public void saveCategory(CategoryCreateDTO categoryDto);
+    public CategoryResponseDTO findCategoryDTO(Long idCategory);
+    public Category findCategoryEntity(Long id);
     public void deleteCategory(Long idCategory);
-    public void editCategory(Long idCategory, Category category);
+    public void editCategory(Long idCategory, CategoryCreateDTO categoryCreateDTO);
 
 }
