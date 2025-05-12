@@ -1,16 +1,18 @@
 package com.backend.foro.services;
 
+import com.backend.foro.dtos.PostCreateDTO;
+import com.backend.foro.dtos.PostResponseDTO;
 import com.backend.foro.model.Post;
 
 import java.util.List;
 
 public interface IPostService {
 
-    public List<Post> getPosts();
-    public Post findPost(Long idPost);
-    public void savePost(Post post);
+    public List<PostResponseDTO> getPosts();
+    public PostResponseDTO findPost(Long idPost);
+    public void savePost(PostCreateDTO postCreateDTO);
     public void deletePost(Long idPost);
-    public void  editPost(Long idPost,Post post);
-    public List<Post> findByCategory(Long idCategory);
+    public void  editPost(Long idPost, PostCreateDTO postCreateDTO);
+    public List<PostResponseDTO> findByCategory(Long idCategory);
 
 }
