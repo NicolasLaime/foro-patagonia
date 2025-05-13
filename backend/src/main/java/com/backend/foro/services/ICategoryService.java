@@ -11,10 +11,10 @@ import java.util.Optional;
 public interface ICategoryService {
 
     public List<CategoryResponseDTO> getCategories();
-    public void saveCategory(CategoryCreateDTO categoryDto);
+    public CategoryResponseDTO saveCategory(CategoryCreateDTO categoryDto);
     public CategoryResponseDTO findCategoryDTO(Long idCategory);
     public Category findCategoryEntity(Long id);
     public void deleteCategory(Long idCategory);
-    public void editCategory(Long idCategory, CategoryCreateDTO categoryCreateDTO);
+    public CategoryResponseDTO editCategory(Long idCategory, CategoryCreateDTO categoryCreateDTO);
 
 }

@@ -55,10 +55,20 @@ public class PostService implements  IPostService {
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
     }
 
-    @Override
-    public void savePost(PostCreateDTO postCreateDTO) {
-        Post post = postMapper.toEntity(postCreateDTO);
+    public List<PostResponseDTO> getPostsByUserEmail(String email) {
+        UserEntity user = userService.findUser(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
 
+        List<Post> posts = postRepo.findByUser(user);
+
+        return posts.stream()
+                .map(post -> postMapper.toResponseDTO(post))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public PostResponseDTO savePost(PostCreateDTO postCreateDTO) {
+        Post post = postMapper.toEntity(postCreateDTO);
         Optional<UserEntity> userOptional = userService.findUser(postCreateDTO.getUserEmail());
         UserEntity user = userOptional.orElseThrow(() -> new EntityNotFoundException("User not found with email: " + postCreateDTO.getUserEmail()));
         Category category= categoryService.findCategoryEntity(postCreateDTO.getCategoryId());
@@ -66,6 +76,7 @@ public class PostService implements  IPostService {
         post.setUser(user);
         post.setDate(new Date());
         postRepo.save(post);
+        return postMapper.toResponseDTO(post);
     }
 
     @Override
@@ -74,13 +85,10 @@ public class PostService implements  IPostService {
     }
 
     @Override
-    public void editPost(Long idPost, PostCreateDTO postCreateDTO) {
+    public PostResponseDTO editPost(Long idPost, PostCreateDTO postCreateDTO) {
         Post postEdit = postRepo.findById(idPost)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found "));
 
-        if (postCreateDTO.getUserEmail() == null || postCreateDTO.getUserEmail().isEmpty()) {
-            throw new IllegalArgumentException("User email is required to edit a post.");
-        }
         if (!postEdit.getUser().getEmail().equals(postCreateDTO.getUserEmail())) {
             throw new IllegalArgumentException("You can only edit your own posts.");
         }
@@ -91,8 +99,8 @@ public class PostService implements  IPostService {
             Category category = categoryService.findCategoryEntity(postCreateDTO.getCategoryId());
             postEdit.setCategory(category);
         }
-
         postRepo.save(postEdit);
+        return postMapper.toResponseDTO(postEdit);
     }
 
     @Override
@@ -102,4 +110,9 @@ public class PostService implements  IPostService {
                 .map(post -> postMapper.toResponseDTO(post))
                 .collect(Collectors.toList());
     }
+
+
+
+
+
 }
