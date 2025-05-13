@@ -10,9 +10,10 @@ public interface IPostService {
 
     public List<PostResponseDTO> getPosts();
     public PostResponseDTO findPost(Long idPost);
-    public void savePost(PostCreateDTO postCreateDTO);
+    public PostResponseDTO savePost(PostCreateDTO postCreateDTO);
     public void deletePost(Long idPost);
-    public void  editPost(Long idPost, PostCreateDTO postCreateDTO);
+    public PostResponseDTO  editPost(Long idPost, PostCreateDTO postCreateDTO);
     public List<PostResponseDTO> findByCategory(Long idCategory);
+
 
 }

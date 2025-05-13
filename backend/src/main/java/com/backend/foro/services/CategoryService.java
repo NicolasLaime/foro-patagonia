@@ -34,9 +34,11 @@ public class CategoryService implements ICategoryService{
 
     @Override
     @Transactional
-    public void saveCategory(CategoryCreateDTO categoryDto) {
+    public CategoryResponseDTO saveCategory(CategoryCreateDTO categoryDto) {
         Category category = categoryMapper.toEntity(categoryDto);
         categoryRepo.save(category);
+        return categoryRepo.findById(category.getId()).map(categoryMapper::toResponseDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
     }
 
     @Override
@@ -62,12 +64,19 @@ public class CategoryService implements ICategoryService{
 
     @Override
     @Transactional
-    public void editCategory(Long idCategory, CategoryCreateDTO categoryCreateDTO) {
+    public CategoryResponseDTO editCategory(Long idCategory, CategoryCreateDTO categoryCreateDTO) {
         Category categoryEdit = categoryRepo.findById(idCategory)
                 .orElseThrow(() -> new EntityNotFoundException("Category not found"));
-        categoryEdit.setName(categoryCreateDTO.getName());
-        categoryEdit.setDescription(categoryCreateDTO.getDescription());
-        categoryRepo.save(categoryEdit);
+        if (categoryCreateDTO.getName() != null) {
+            categoryEdit.setName(categoryCreateDTO.getName());
+        }
 
+        if (categoryCreateDTO.getDescription() != null) {
+            categoryEdit.setDescription(categoryCreateDTO.getDescription());
+        }
+
+        categoryRepo.save(categoryEdit);
+        return categoryRepo.findById(idCategory).map(categoryMapper :: toResponseDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
     }
 }

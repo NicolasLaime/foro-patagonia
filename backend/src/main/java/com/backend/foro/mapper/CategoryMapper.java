@@ -23,9 +23,7 @@ public interface CategoryMapper {
 
     @Mapping(source = "name", target = "name")
     @Mapping(source = "description", target = "description")
-    @Mapping(source = "postCount", target = "postCount")
     @Mapping(target = "id", ignore = true)
     Category toEntity(CategoryResponseDTO dto);
-
 
 }

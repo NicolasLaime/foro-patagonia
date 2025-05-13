@@ -31,7 +31,7 @@ public class UserEntity {
     @JoinColumn(name = "role_id")
     private RoleEntity role;
 
-    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL , fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Post> posts;
 
 }

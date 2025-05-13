@@ -33,12 +33,11 @@ public class Category {
     private  String description;
 
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY )
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Post> posts;
 
-
-
-
-
+    public int getPostCount() {
+        return posts != null ? posts.size() : 0;
+    }
 
 }

@@ -1,5 +1,8 @@
 package com.backend.foro.dtos;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +14,13 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostCreateDTO {
+    @NotBlank(message = "Idea must not be blank.")
     private String idea;
+
+    @NotBlank(message = "User email is required.")
+    @Email(message = "Invalid email format.")
     private String userEmail;
+
+    @NotNull(message = "Category ID is required.")
     private Long categoryId;
 }
