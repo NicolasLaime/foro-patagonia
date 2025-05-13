@@ -16,5 +16,4 @@ public class CategoryResponseDTO {
     private String name;
     private String description;
     private int postCount;
-    private List<PostResponseDTO> posts;
 }

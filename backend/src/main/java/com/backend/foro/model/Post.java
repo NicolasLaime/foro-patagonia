@@ -23,24 +23,22 @@ import java.util.Date;
 @Builder
 @Table(name = "Post")
 public class Post {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-   
+
     private String idea;
 
     private Date date;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "category_id")
     private Category category;
 
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")
     private UserEntity user;
-
-
 
 }
