@@ -23,15 +23,17 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class AuthService implements UserDetailsService {
+public class AuthService  {
 
+    private final UserDetailsServiceImpl userDetailsService;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
 
-    public AuthService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+    public AuthService(UserDetailsServiceImpl userDetailsService, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+        this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -39,29 +41,18 @@ public class AuthService implements UserDetailsService {
     }
 
 
-    public UserDetails loadUserByUsername(String email){
-        UserEntity userEntity = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        return User.builder()
-                .username(userEntity.getEmail())
-                .password(userEntity.getPassword())
-                .authorities(Collections.singletonList(new SimpleGrantedAuthority(userEntity.getRole().getRoleName().name())))
-                .build();
-
-    }
-
 
     //login
     public LoginResponse login(LoginRequest loginRequest){
-        UserEntity userEntity = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        if(!passwordEncoder.matches(loginRequest.getPassword(), userEntity.getPassword())){
-            throw new RuntimeException("contraseña incorrecta");
+        UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
+
+        if(!passwordEncoder.matches(loginRequest.getPassword(), userDetails.getPassword())){
+            throw new RuntimeException("Contraseña incorrecta");
         }
 
-        String role = userEntity.getRole().getRoleName().name();
+        String role = userDetails.getAuthorities().iterator().next().getAuthority();
 
-        String token = jwtUtil.generateToken(userEntity.getEmail(), role);
+        String token = jwtUtil.generateToken(userDetails.getUsername(),role);
 
         return new LoginResponse(token);
 
@@ -72,17 +63,21 @@ public class AuthService implements UserDetailsService {
         String email = registerRequest.getEmail();
         String password = registerRequest.getPassword();
 
+        // Asignar el rol: si no se especifica, asignamos "USER" por defecto
+        String roleName = (registerRequest.getRole() != null && !registerRequest.getRole().isEmpty())
+                ? registerRequest.getRole().toUpperCase()
+                : "USER";
+
+        // Buscar el rol en la base de datos
+        Optional<RoleEntity> roleOpt = roleRepository.findByRoleName(RoleEnum.valueOf(roleName));
+
+        if (roleOpt.isEmpty()) {
+            throw new RuntimeException("Error: Role " + roleName + " not found in the database.");
+        }
+
         UserEntity user = new UserEntity();
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
-
-        // Buscar el rol USER en la base de datos
-        Optional<RoleEntity> roleOpt = roleRepository.findByRoleName(RoleEnum.USER);
-
-        if (roleOpt.isEmpty()) {
-            throw new RuntimeException("Error: Role USER not found in the database.");
-        }
-
         user.setRole(roleOpt.get());
 
         userRepository.save(user);
