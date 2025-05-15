@@ -36,6 +36,11 @@ public class Post {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @Column(name = "author")
+    private String author;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")

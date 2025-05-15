@@ -17,9 +17,10 @@ public class PostCreateDTO {
     @NotBlank(message = "Idea must not be blank.")
     private String idea;
 
-    @NotBlank(message = "User email is required.")
-    @Email(message = "Invalid email format.")
-    private String userEmail;
+    @NotBlank(message = "Autor  is required.")
+    private String author;
+
+    private String imageUrl;
 
     @NotNull(message = "Category ID is required.")
     private Long categoryId;

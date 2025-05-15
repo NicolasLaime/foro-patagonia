@@ -12,6 +12,7 @@ import com.backend.foro.repository.ICategoryRepository;
 import com.backend.foro.repository.IPostRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -68,16 +69,23 @@ public class PostService implements  IPostService {
 
     @Override
     public PostResponseDTO savePost(PostCreateDTO postCreateDTO) {
+        String emailUsuarioLogueado = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity user = userService.findUser(emailUsuarioLogueado)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + emailUsuarioLogueado));
+
         Post post = postMapper.toEntity(postCreateDTO);
-        Optional<UserEntity> userOptional = userService.findUser(postCreateDTO.getUserEmail());
-        UserEntity user = userOptional.orElseThrow(() -> new EntityNotFoundException("User not found with email: " + postCreateDTO.getUserEmail()));
-        Category category= categoryService.findCategoryEntity(postCreateDTO.getCategoryId());
+
+        Category category = categoryService.findCategoryEntity(postCreateDTO.getCategoryId());
+
         post.setCategory(category);
         post.setUser(user);
         post.setDate(new Date());
+
         postRepo.save(post);
+
         return postMapper.toResponseDTO(post);
     }
+
 
     @Override
     public void deletePost(Long idPost) {
@@ -89,13 +97,9 @@ public class PostService implements  IPostService {
         Post postEdit = postRepo.findById(idPost)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found "));
 
-        if (!postEdit.getUser().getEmail().equals(postCreateDTO.getUserEmail())) {
-            throw new IllegalArgumentException("You can only edit your own posts.");
-        }
-
         postEdit.setIdea(postCreateDTO.getIdea());
 
-        if (postCreateDTO.getCategoryId() != null) {
+        if (postCreateDTO.getCategoryId()!= null) {
             Category category = categoryService.findCategoryEntity(postCreateDTO.getCategoryId());
             postEdit.setCategory(category);
         }
@@ -110,9 +114,6 @@ public class PostService implements  IPostService {
                 .map(post -> postMapper.toResponseDTO(post))
                 .collect(Collectors.toList());
     }
-
-
-
 
 
 }
