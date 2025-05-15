@@ -23,44 +23,50 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
 
-
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException{
 
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        //obtenemos encabezado
         String authHeader = request.getHeader("Authorization");
 
-        if(authHeader != null && authHeader.startsWith("Bearer ")){
+        //extraemos token
+        if(authHeader !=null && authHeader.startsWith("Bearer ")){
             String token = authHeader.substring(7);
 
-            if(jwtUtil.validateToken(token)){
-                String username= jwtUtil.getUserNameFromToken(token);
-                String role = jwtUtil.getRoleFromToken(token);
+        //validamos token
+        if (jwtUtil.validateToken(token)){
+            //obtenemos de adentro del token el ususario y el rol del token
+            String username = jwtUtil.getUserNameFromToken(token);
+            String role = jwtUtil.getRoleFromToken(token);
 
-                List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(role));
+            //creamos la lista de autoridades aca va el rol
+            List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(role));
 
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        username,
-                        null,
-                        authorities
-                );
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
+            // creamos el objeto de autenticacion basado en el nombre de usuario y el rol
+
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    username,
+                    "",
+                    authorities
+            );
+
+            // establecemos los detalles de la autenticacion en el request!
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+            //establecemos el contexto de seguridad en el SecurityContextHolder
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
 
         }
-
-
-        filterChain.doFilter(request,response);
-
     }
 
 
-
-
+        filterChain.doFilter(request,response);
+}
 
 }

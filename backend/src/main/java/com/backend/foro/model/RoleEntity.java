@@ -24,18 +24,6 @@ public class RoleEntity {
     @Column(nullable = false,unique = true)
     private RoleEnum roleName;
 
-    @ElementCollection(targetClass = PermissionEnum.class,fetch = FetchType.EAGER)
-    @CollectionTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"))
-    @Enumerated(EnumType.STRING)
-    @Column(name = "permission")
-    private Set<PermissionEnum> permissions;
-
-
-
-
-
-
-
 
 
 }
