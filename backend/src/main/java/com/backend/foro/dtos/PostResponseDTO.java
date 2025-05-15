@@ -9,6 +9,6 @@ public class PostResponseDTO {
     private Long id;
     private String idea;
     private Date date;
-    private String userEmail;
-    private String categoryName;
+    private String author;
+    private Long categoryId;
 }
