@@ -10,12 +10,13 @@ import org.mapstruct.Mapping;
 public interface PostMapper {
 
     // Post -> PostResponseDTO
-    @Mapping(source = "user.email", target = "userEmail")
-    @Mapping(source = "category.name", target = "categoryName")
+    @Mapping(source = "author", target = "author")
+    @Mapping(source = "category.id", target = "categoryId")
     PostResponseDTO toResponseDTO(Post post);
 
     //PostCreateDTO -> Post
-    @Mapping(source = "userEmail", target = "user.email")
+    @Mapping(source = "author", target = "author")
+    @Mapping(source = "imageUrl" , target = "imageUrl")
     @Mapping(source = "categoryId", target = "category.id")
     @Mapping(target = "id", ignore = true)
     Post toEntity(PostCreateDTO dto);
