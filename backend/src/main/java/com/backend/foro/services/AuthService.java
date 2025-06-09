@@ -83,9 +83,7 @@ public class AuthService  {
         userRepository.save(user);
 
         // Devolver un DTO con el mensaje de éxito
-        return new RegisterResponse("User registered successfully!");
+        return new RegisterResponse("Usuario Registrado Exitosamente");
     }
-
-
 
 }
