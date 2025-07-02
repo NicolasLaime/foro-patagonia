@@ -14,6 +14,8 @@ public interface IPostService {
     public void deletePost(Long idPost);
     public PostResponseDTO  editPost(Long idPost, PostCreateDTO postCreateDTO);
     public List<PostResponseDTO> findByCategory(Long idCategory);
+    public List<PostResponseDTO> findByUserId(Long userId);
+    void deletePostFromUser(Long userId, Long postId);
 
 
 }

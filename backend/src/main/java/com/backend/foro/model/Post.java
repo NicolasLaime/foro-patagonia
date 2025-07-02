@@ -32,6 +32,8 @@ public class Post {
 
     private Date date;
 
+    private String content;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "category_id")
     private Category category;

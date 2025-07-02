@@ -2,49 +2,45 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../services/AuthService";
 import type { LoginRequest, LoginResponse } from "../../services/AuthInterface";
-import axios from "axios";
 import loginImagen from "../../assets/login.jpg";
+import { jwtDecode } from "jwt-decode";
+import {useForm} from 'react-hook-form'
+import useAuthStore from "../../store/useAuthStore";
+
+interface DecodedToken {
+  role: "ROLE_ADMIN" | "ROLE_USER"
+}
+
+
 
 const Login = () => {
-  const [formData, setFormData] = useState<LoginRequest>({
-    email: "",
-    password: "",
-  });
-
-  const [error, setError] = useState<string | null>(null);
-
+  
+  const {register, handleSubmit , formState:{errors}} = useForm<LoginRequest>()
+  
   const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+  const loginAuth = useAuthStore((state) => state.loginAuth);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
-    e.preventDefault();
+  const onSubmit = async (data: LoginRequest) => {
     setError(null);
-
     try {
-      const response: LoginResponse = await login(formData);
-      localStorage.setItem("token", response.token);
+      const response: LoginResponse = await login(data);
+      const decoded: DecodedToken = jwtDecode(response.token);
+      loginAuth(response.token, decoded.role); // guardamos en zustand
       navigate("/");
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err) && err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else {
-        setError("Error inesperado, intenta nuevamente.");
-      }
+    } catch (error) {
+      setError("Error al iniciar sesión. Verifica tus datos.");
+      console.error(error);
     }
   };
 
+    
+
   return (
     <div className="h-screen md:flex">
-      {/* Lado izquierdo: formulario */}
-      <div className="flex md:w-1/2 justify-center py-10 items-center bg-amber-100">
-        <form onSubmit={handleSubmit} className="bg-white w-full max-w-md px-6 rounded-4xl">
+     
+      <div className="flex md:w-1/2 justify-center py-10 items-center bg-white">
+        <form onSubmit={handleSubmit(onSubmit)} className="bg-white w-full max-w-md px-6 rounded-4xl my-10">
           <h1 className="text-gray-800 font-bold text-2xl mb-1">Iniciar Sesión</h1>
           <p className="text-sm font-normal text-gray-600 mb-4">Ingresa tus datos para continuar</p>
 
@@ -55,12 +51,10 @@ const Login = () => {
             <input
               className="pl-2 outline-none border-none w-full"
               type="email"
-              name="email"
               placeholder="Correo electrónico"
-              value={formData.email}
-              onChange={handleChange}
-              required
+              {...register("email", {required: "El corre es obligatorio"})}
             />
+            {errors.email && <p className="text-red-400 mb-2">{errors.email.message}</p>}
           </div>
 
           {/* Password */}
@@ -68,12 +62,10 @@ const Login = () => {
             <input
               className="pl-2 outline-none border-none w-full"
               type="password"
-              name="password"
               placeholder="Contraseña"
-              value={formData.password}
-              onChange={handleChange}
-              required
+             {...register("password", { required: "La contraseña es obligatoria" })}
             />
+            {errors.password && <p className="text-red-400 mb-2">{errors.password.message}</p>}
           </div>
 
           <button

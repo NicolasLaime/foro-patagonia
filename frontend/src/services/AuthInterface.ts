@@ -5,13 +5,13 @@ export interface LoginRequest{
 
 
 export interface LoginResponse{
-    token:string
+    token:string;
+    role:"ADMIN" | "USER"
 }
 
 export interface RegisterRequest {
   email: string;
   password: string;
-  role?: string;
 }
 
 export interface RegisterResponse {

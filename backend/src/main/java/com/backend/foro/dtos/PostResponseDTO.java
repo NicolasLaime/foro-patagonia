@@ -11,4 +11,6 @@ public class PostResponseDTO {
     private Date date;
     private String author;
     private Long categoryId;
+    private String imageUrl;
+    private String content;
 }

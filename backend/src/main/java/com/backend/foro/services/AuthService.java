@@ -63,16 +63,17 @@ public class AuthService  {
         String email = registerRequest.getEmail();
         String password = registerRequest.getPassword();
 
-        // Asignar el rol: si no se especifica, asignamos "USER" por defecto
-        String roleName = (registerRequest.getRole() != null && !registerRequest.getRole().isEmpty())
-                ? registerRequest.getRole().toUpperCase()
-                : "USER";
+        // Verificamos si es el primer usuario
+        boolean esPrimerUsuario = userRepository.count() == 0;
 
-        // Buscar el rol en la base de datos
-        Optional<RoleEntity> roleOpt = roleRepository.findByRoleName(RoleEnum.valueOf(roleName));
+        // Asignamos ADMIN si es el primero, USER en caso contrario
+        RoleEnum rolAsignado = esPrimerUsuario ? RoleEnum.ADMIN : RoleEnum.USER;
+
+        // Buscamos el rol en la base de datos (asumimos que existen "ADMIN" y "USER")
+        Optional<RoleEntity> roleOpt = roleRepository.findByRoleName(rolAsignado);
 
         if (roleOpt.isEmpty()) {
-            throw new RuntimeException("Error: Role " + roleName + " not found in the database.");
+            throw new RuntimeException("Error: Rol " + rolAsignado + " no encontrado en la base de datos.");
         }
 
         UserEntity user = new UserEntity();
@@ -82,8 +83,7 @@ public class AuthService  {
 
         userRepository.save(user);
 
-        // Devolver un DTO con el mensaje de éxito
-        return new RegisterResponse("Usuario Registrado Exitosamente");
+        return new RegisterResponse("Usuario registrado exitosamente con rol: " + rolAsignado);
     }
 
 }

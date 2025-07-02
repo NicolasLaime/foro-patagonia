@@ -115,5 +115,32 @@ public class PostService implements  IPostService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<PostResponseDTO> findByUserId(Long userId) {
+        UserEntity user = userService.getUserById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+
+        List<Post> posts = postRepo.findByUser(user);
+
+        return posts.stream()
+                .map(postMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deletePostFromUser(Long userId, Long postId) {
+        UserEntity user = userService.getUserById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+
+        Post post = postRepo.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("Post no encontrado"));
+
+        if (!post.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("El post no pertenece a este usuario");
+        }
+
+        postRepo.delete(post);
+    }
+
 
 }

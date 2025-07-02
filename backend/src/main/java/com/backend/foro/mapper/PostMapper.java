@@ -12,12 +12,15 @@ public interface PostMapper {
     // Post -> PostResponseDTO
     @Mapping(source = "author", target = "author")
     @Mapping(source = "category.id", target = "categoryId")
+    @Mapping(source = "imageUrl" , target = "imageUrl")
+    @Mapping(source = "content", target = "content")
     PostResponseDTO toResponseDTO(Post post);
 
     //PostCreateDTO -> Post
     @Mapping(source = "author", target = "author")
     @Mapping(source = "imageUrl" , target = "imageUrl")
     @Mapping(source = "categoryId", target = "category.id")
+    @Mapping(source = "content", target = "content")
     @Mapping(target = "id", ignore = true)
     Post toEntity(PostCreateDTO dto);
 }

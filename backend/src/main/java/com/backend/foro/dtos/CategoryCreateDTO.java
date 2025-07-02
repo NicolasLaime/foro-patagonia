@@ -18,4 +18,6 @@ public class CategoryCreateDTO {
     @NotBlank(message = "Category description is required.")
     @Size(min = 5, max = 255, message = "Category description must be between 5 and 255 characters.")
     private String description;
+
+    private String imageUrl;
 }

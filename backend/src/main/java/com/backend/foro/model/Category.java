@@ -36,6 +36,8 @@ public class Category {
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Post> posts;
 
+    private String imageUrl;
+
     public int getPostCount() {
         return posts != null ? posts.size() : 0;
     }

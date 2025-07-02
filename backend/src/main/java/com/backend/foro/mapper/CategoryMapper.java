@@ -11,18 +11,21 @@ public interface CategoryMapper {
 
 
     @Mapping(source = "name" , target = "name")
+    @Mapping(source = "imageUrl", target = "imageUrl")
     @Mapping(target = "id", ignore = true)
     Category toEntity( CategoryCreateDTO dto);
 
 
     @Mapping(source = "name", target = "name")
     @Mapping(source = "description", target = "description")
+    @Mapping(source = "imageUrl", target = "imageUrl")
     @Mapping(expression = "java(category.getPostCount())", target = "postCount")
     CategoryResponseDTO toResponseDTO(Category category);
 
 
     @Mapping(source = "name", target = "name")
     @Mapping(source = "description", target = "description")
+    @Mapping(source = "imageUrl", target = "imageUrl")
     @Mapping(target = "id", ignore = true)
     Category toEntity(CategoryResponseDTO dto);
 

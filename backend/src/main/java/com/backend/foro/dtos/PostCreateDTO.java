@@ -24,4 +24,9 @@ public class PostCreateDTO {
 
     @NotNull(message = "Category ID is required.")
     private Long categoryId;
+
+
+    @NotBlank(message = "Content is required.")
+    private String content;
+
 }
