@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { register as registerService } from "../../services/AuthService";
 import type { RegisterRequest, RegisterResponse } from "../../services/AuthInterface";
 import registerImagen from "../../assets/register.jpg"
