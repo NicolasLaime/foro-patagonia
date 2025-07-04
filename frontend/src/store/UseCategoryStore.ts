@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import { toast } from "react-toastify";
+import backendUrl from "../api/BackendUrl";
 
 
 export interface Category{
@@ -30,7 +31,7 @@ const useCategoryStore = create<CategoryStore>((set, get) => ({
   fetchCategorias: async () => {
     set({ loading: true });
     try {
-      const res = await axios.get("http://localhost:8080/categories");
+      const res = await axios.get(`${backendUrl}/categories`);
       set({ categorias: res.data });
     } catch (err) {
       console.error("Error al traer categorías", err);
@@ -43,7 +44,7 @@ const useCategoryStore = create<CategoryStore>((set, get) => ({
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:8080/categories",
+        `${backendUrl}/categories`,
         { name, description, imageUrl },
         {
           headers: {
@@ -63,7 +64,7 @@ const useCategoryStore = create<CategoryStore>((set, get) => ({
   eliminarCategoria: async (id) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:8080/categories/${id}`, {
+      await axios.delete(`${backendUrl}/categories/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -80,7 +81,7 @@ const useCategoryStore = create<CategoryStore>((set, get) => ({
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:8080/categories/${id}`,
+        `${backendUrl}/categories/${id}`,
         { name, description, imageUrl },
         {
           headers: {

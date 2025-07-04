@@ -1,6 +1,7 @@
 import axios from "axios";
 import { create } from "zustand";
 import { toast } from "react-toastify";
+import backendUrl from "../api/BackendUrl";
 
 interface User{
     id:number;
@@ -37,7 +38,7 @@ const useUserStore = create<UserStore>((set,get) => ({
 
     fetchUsers: async () => {
         const token = localStorage.getItem("token")
-        const res = await axios.get("http://localhost:8080/admin/users", {
+        const res = await axios.get(`${backendUrl}/admin/users`, {
             headers:{
                 Authorization: `Bearer ${token}`
             },
@@ -48,7 +49,7 @@ const useUserStore = create<UserStore>((set,get) => ({
     deleteUser: async (id: number) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:8080/admin/users/${id}`, {
+      await axios.delete(`${backendUrl}/admin/users/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -64,7 +65,7 @@ const useUserStore = create<UserStore>((set,get) => ({
   fetchPostsByUserId: async (userId) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`http://localhost:8080/admin/users/${userId}/posts`, {
+      const res = await axios.get(`${backendUrl}/admin/users/${userId}/posts`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       set((state) => ({
@@ -80,7 +81,7 @@ const useUserStore = create<UserStore>((set,get) => ({
     try {
       const token = localStorage.getItem("token");
       await axios.delete(
-        `http://localhost:8080/admin/users/${userId}/posts/${postId}`,
+        `${backendUrl}/admin/users/${userId}/posts/${postId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
