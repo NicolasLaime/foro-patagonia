@@ -4,7 +4,9 @@ import com.backend.foro.model.RoleEntity;
 import com.backend.foro.model.RoleEnum;
 import com.backend.foro.repository.RoleRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DataInitializer implements CommandLineRunner {
 
     private final RoleRepository roleRepository;
