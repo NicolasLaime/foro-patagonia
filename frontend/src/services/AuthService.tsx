@@ -5,11 +5,23 @@ import type { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } f
 const API_URL = `${backendUrl}/auth`;
 
 export const login = async(data:LoginRequest): Promise<LoginResponse> => {
-  const response = await axios.post<LoginResponse>(`${API_URL}/login`, data)
+  const response = await axios.post<LoginResponse>(`${API_URL}/login`, data,
+    {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }
+  )
   return response.data
 }
 
 export const register = async (data: RegisterRequest): Promise<RegisterResponse> => {
-  const response = await axios.post<RegisterResponse>(`${API_URL}/register`, data);
+  const response = await axios.post<RegisterResponse>(`${API_URL}/register`, data, 
+    {
+      headers: {
+      "Content-Type": "application/json"
+    }
+  }
+  );
   return response.data;
 };
