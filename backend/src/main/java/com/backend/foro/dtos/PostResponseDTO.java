@@ -13,4 +13,5 @@ public class PostResponseDTO {
     private Long categoryId;
     private String imageUrl;
     private String content;
+    private Long userId;
 }

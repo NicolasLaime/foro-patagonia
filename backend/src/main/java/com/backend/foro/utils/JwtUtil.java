@@ -17,10 +17,11 @@ public class JwtUtil {
 
     private static final long EXPIRATION_TIME = 1000*60*60;
 
-    public String generateToken(String username, String role){
+    public String generateToken(String username, String role, Long userId){
         return JWT.create()
                 .withSubject(username)
                 .withClaim("role",role)
+                .withClaim("userId", userId)
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .sign(Algorithm.HMAC256(secretKey));
@@ -54,6 +55,12 @@ public class JwtUtil {
         return decodedJWT.getClaim("role").asString();
     }
 
+    public Long getUserIdFromToken(String token) {
+        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = verifier.verify(token);
+        return decodedJWT.getClaim("userId").asLong();
+    }
 
 
 }

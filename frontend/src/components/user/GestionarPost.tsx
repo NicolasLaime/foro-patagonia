@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import usePostStore from "../../store/UsePostStore";
 import useCategoryStore from "../../store/UseCategoryStore";
+import useAuthStore from "../../store/useAuthStore";
 
 interface FormInputs {
   idea: string;
@@ -21,6 +22,8 @@ const GestionarPost = () => {
     loading,
     error,
   } = usePostStore();
+
+  const { userId } = useAuthStore();
   const { categorias, fetchCategorias } = useCategoryStore();
   const [editId, setEditId] = useState<number | null>(null);
 
@@ -37,25 +40,49 @@ const GestionarPost = () => {
     fetchCategorias();
   }, []);
 
+  // Filtrar posts para mostrar solo los del usuario actual
+  const misPosts = posts.filter(post => post.userId === userId);
+
   const onSubmit = async (data: FormInputs) => {
-    if (editId) {
-      await updatePost(editId, data);
-      setEditId(null);
-    } else {
-      await createPost(data);
+    const dataWithUser = { ...data, userId };
+    try {
+      if (editId) {
+        await updatePost(editId, dataWithUser);
+        setEditId(null);
+      } else {
+        await createPost(dataWithUser);
+      }
+      reset();
+      fetchPosts(); 
+    } catch (err) {
+      console.log(err, "error")
     }
-    reset();
   };
 
   const handleEdit = (postId: number) => {
     const post = posts.find((p) => p.id === postId);
-    if (post) {
+    if (post && post.userId === userId) {
       setValue("idea", post.idea);
       setValue("author", post.author);
-      setValue("imageUrl", "");
+      setValue("imageUrl", post.imageUrl || "");
       setValue("categoryId", post.categoryId);
-      setValue("content", post.content);
+      setValue("content", post.content || "");
       setEditId(post.id);
+    }
+  };
+
+  const handleDelete = async (postId: number) => {
+    const post = posts.find((p) => p.id === postId);
+    if (!post) return;
+
+    if (post.userId !== userId) {
+      alert("No tienes permiso para eliminar este post");
+      return;
+    }
+
+    if (window.confirm("¿Seguro quieres eliminar este post?")) {
+      await deletePost(postId);
+      fetchPosts();
     }
   };
 
@@ -83,6 +110,7 @@ const GestionarPost = () => {
           {...register("author", { required: "El autor es obligatorio" })}
           placeholder="Autor"
           className="w-full p-3 rounded bg-gray-700 text-white"
+        
         />
         {errors.author && (
           <p className="text-red-400 text-sm">{errors.author.message}</p>
@@ -129,37 +157,41 @@ const GestionarPost = () => {
       {loading && <p className="text-yellow-300 mt-4">Cargando...</p>}
       {error && <p className="text-red-500 mt-4">{error}</p>}
 
-      {/* LISTADO DE POSTS */}
-      <ul className="space-y-4 mt-6">
-        {posts.map((post) => (
-          <li
-            key={post.id}
-            className="p-4 bg-gray-700 text-white rounded-lg shadow-md"
-          >
-            <h3 className="text-xl font-semibold">{post.idea}</h3>
-            <p className="text-sm">Autor: {post.author}</p>
-            <p className="text-sm">Categoría ID: {post.categoryId}</p>
-            <p className="text-sm text-gray-400">
-              Fecha: {new Date(post.date).toLocaleString()}
-            </p>
+      {/* LISTADO DE POSTS filtrados */}
+      {misPosts.length === 0 ? (
+        <p className="text-center text-white mt-4">No creaste ningún post</p>
+      ) : (
+        <ul className="space-y-4 mt-6">
+          {misPosts.map((post) => (
+            <li
+              key={post.id}
+              className="p-4 bg-gray-700 text-white rounded-lg shadow-md"
+            >
+              <h3 className="text-xl font-semibold">{post.idea}</h3>
+              <p className="text-sm">Autor: {post.author}</p>
+              <p className="text-sm">Categoría ID: {post.categoryId}</p>
+              <p className="text-sm text-gray-400">
+                Fecha: {new Date(post.date).toLocaleString()}
+              </p>
 
-            <div className="mt-3 flex flex-wrap gap-2">
-              <button
-                className="bg-yellow-500 hover:bg-yellow-600 px-4 py-1 rounded text-white"
-                onClick={() => handleEdit(post.id)}
-              >
-                Editar
-              </button>
-              <button
-                className="bg-red-600 hover:bg-red-700 px-4 py-1 rounded text-white"
-                onClick={() => deletePost(post.id)}
-              >
-                Eliminar
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  className="bg-yellow-500 hover:bg-yellow-600 px-4 py-1 rounded text-white"
+                  onClick={() => handleEdit(post.id)}
+                >
+                  Editar
+                </button>
+                <button
+                  className="bg-red-600 hover:bg-red-700 px-4 py-1 rounded text-white"
+                  onClick={() => handleDelete(post.id)}
+                >
+                  Eliminar
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

@@ -89,20 +89,54 @@ public class PostService implements  IPostService {
 
     @Override
     public void deletePost(Long idPost) {
+
+        String emailUsuarioLogueado = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity usuarioLogueado = userService.findUser(emailUsuarioLogueado)
+                        .orElseThrow(() -> new EntityNotFoundException("Usuario No encontrado"));
+
+        Post post = postRepo.findById(idPost)
+                        .orElseThrow(() -> new EntityNotFoundException("Post no encontrado"));
+
+        boolean esAdmin = usuarioLogueado.getRole().getRoleName().equals("ADMIN");
+
+        if(!esAdmin && !post.getUser().getId().equals(usuarioLogueado.getId())){
+            throw new IllegalArgumentException("No estas autorizado para eliminar este post");
+        }
+
         postRepo.deleteById(idPost);
+
     }
+
+
+
+
+
 
     @Override
     public PostResponseDTO editPost(Long idPost, PostCreateDTO postCreateDTO) {
+        String emailUsuarioLogueado = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity usuarioLogueado = userService.findUser(emailUsuarioLogueado)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+
         Post postEdit = postRepo.findById(idPost)
-                .orElseThrow(() -> new EntityNotFoundException("Post not found "));
+                .orElseThrow(() -> new EntityNotFoundException("Post no encontrado"));
+
+        boolean esAdmin = usuarioLogueado.getRole().getRoleName().equals("ADMIN");
+
+        if (!esAdmin && !postEdit.getUser().getId().equals(usuarioLogueado.getId())) {
+            throw new IllegalArgumentException("No estás autorizado para editar este post");
+        }
 
         postEdit.setIdea(postCreateDTO.getIdea());
 
-        if (postCreateDTO.getCategoryId()!= null) {
+        if (postCreateDTO.getCategoryId() != null) {
             Category category = categoryService.findCategoryEntity(postCreateDTO.getCategoryId());
             postEdit.setCategory(category);
         }
+
+        postEdit.setImageUrl(postCreateDTO.getImageUrl());
+        postEdit.setContent(postCreateDTO.getContent());
+
         postRepo.save(postEdit);
         return postMapper.toResponseDTO(postEdit);
     }

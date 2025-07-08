@@ -10,14 +10,14 @@ import org.mapstruct.Mapping;
 public interface PostMapper {
 
     // Post -> PostResponseDTO
-    @Mapping(source = "author", target = "author")
+    @Mapping(source = "user.email", target = "author")
     @Mapping(source = "category.id", target = "categoryId")
     @Mapping(source = "imageUrl" , target = "imageUrl")
     @Mapping(source = "content", target = "content")
+    @Mapping(source = "user.id", target = "userId")
     PostResponseDTO toResponseDTO(Post post);
 
     //PostCreateDTO -> Post
-    @Mapping(source = "author", target = "author")
     @Mapping(source = "imageUrl" , target = "imageUrl")
     @Mapping(source = "categoryId", target = "category.id")
     @Mapping(source = "content", target = "content")

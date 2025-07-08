@@ -43,19 +43,23 @@ public class AuthService  {
 
 
     //login
-    public LoginResponse login(LoginRequest loginRequest){
+    public LoginResponse login(LoginRequest loginRequest) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
 
-        if(!passwordEncoder.matches(loginRequest.getPassword(), userDetails.getPassword())){
+        if (!passwordEncoder.matches(loginRequest.getPassword(), userDetails.getPassword())) {
             throw new RuntimeException("Contraseña incorrecta");
         }
 
         String role = userDetails.getAuthorities().iterator().next().getAuthority();
 
-        String token = jwtUtil.generateToken(userDetails.getUsername(),role);
+        // Buscamos el usuario en la base de datos para obtener el ID
+        UserEntity user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Generamos el token incluyendo el userId
+        String token = jwtUtil.generateToken(userDetails.getUsername(), role, user.getId());
 
         return new LoginResponse(token);
-
     }
 
     //registrar un usuario

@@ -20,6 +20,7 @@ interface PostResponseDTO {
   categoryId: number
   imageUrl?: string
   content?: string;
+  userId:number
 
 }
 

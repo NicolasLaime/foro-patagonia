@@ -9,6 +9,7 @@ import useAuthStore from "../../store/useAuthStore";
 
 interface DecodedToken {
   role: "ROLE_ADMIN" | "ROLE_USER"
+  userId: number
 }
 
 
@@ -26,7 +27,8 @@ const Login = () => {
     try {
       const response: LoginResponse = await login(data);
       const decoded: DecodedToken = jwtDecode(response.token);
-      loginAuth(response.token, decoded.role); // guardamos en zustand
+         
+      loginAuth(response.token, decoded.role,Number(decoded.userId)); // guardamos en zustand
       navigate("/");
     } catch (error) {
       setError("Error al iniciar sesión. Verifica tus datos.");
